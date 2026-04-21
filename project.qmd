@@ -1,0 +1,222 @@
+---
+title: "Whose game is it? Ten years of esports earnings"
+author:
+  - name: "[Name 1]"
+  - name: "[Name 2]"
+date: today
+format:
+  pdf:
+    documentclass: article
+    fontsize: 11pt
+    geometry: margin=1in
+    number-sections: true
+    fig-align: center
+    fig-pos: "H"
+    keep-tex: false
+execute:
+  echo: false
+  warning: false
+  message: false
+bibliography: references.bib
+csl: apa7.csl
+---
+
+```{r}
+#| label: setup
+#| include: false
+# Style guide: Tidyverse (https://style.tidyverse.org/)
+# Primary author: [Name 1]
+# Reviewed by:    [Name 2]
+
+library(dplyr)
+library(tidyr)
+library(readr)
+library(ggplot2)
+library(gt)
+library(stringr)
+library(here)
+
+# helpers live in R/ so we don't clutter the report body
+source(here("R", "scrape_helpers.R"))
+
+# pre-tidied data loaded from data/ (produced by data-raw scripts)
+games_by_year <- read_csv(here("data", "games_by_year.csv"),
+                          show_col_types = FALSE)
+```
+
+# Introduction {#sec-intro}
+
+Competitive video gaming has gone from LAN parties in basements to
+stadium finals with eight-figure prize pools in about fifteen years.
+Our team wanted to see what that trajectory actually looks like once
+you pull the receipts: which titles have pulled the biggest cheques,
+how that breakdown has moved between genres, and whether the money
+has tracked the games people are actually playing.
+
+Two of us follow esports casually — one of us has been watching the
+International since 2015, the other got pulled in through Valorant
+— but we're not going to lean on that. We'll treat the data as the
+primary source of truth and keep our priors in check.
+
+# Data and provenance {#sec-data}
+
+## Primary source
+
+Our main data came from the yearly "Top Games" pages on
+`esportsearnings.com`, pulled for 2014 through 2024. The site is a
+community-maintained database. Tournament results are submitted and
+reviewed by volunteer editors; prize payouts get cross-checked against
+official brackets and organizer announcements where available. A short
+description of the editorial policy is linked in the site footer
+[@esportsearnings_about].
+
+We scraped with `{rvest}` wrapped in `{polite}` so the session respects
+`robots.txt` and throttles to one request every few seconds. Raw HTML
+is cached under `data-raw/cache/` so the scrape is reproducible
+without repeatedly hitting the server. See the code appendix for the
+full scraper.
+
+## Supplementary source
+
+To connect earnings to playerbase we pulled monthly peak concurrent
+players from SteamDB / SteamCharts via their public endpoints. Only
+PC titles that have a Steam page got matched; the remainder (console
+fighters, mobile-only esports) are flagged and handled separately in
+our analysis.
+
+## Attributes we focus on
+
+| Attribute | Type | Source | Notes |
+|-----------|------|--------|-------|
+| `year` | Quantitative (discrete) | esportsearnings | 2014–2024 |
+| `game` | Categorical | esportsearnings | Title as listed on the site |
+| `genre` | Categorical | Manual coding | MOBA, FPS, BR, Fighting, Card, Other |
+| `total_earnings_usd` | Quantitative | esportsearnings | Sum of tournament prize money that year |
+| `tournaments` | Quantitative | esportsearnings | Count of ranked events that year |
+| `active_players` | Quantitative | esportsearnings | Distinct players earning prize money |
+| `release_year` | Quantitative | esportsearnings game page | Used to compute game age |
+| `steam_peak_ccu` | Quantitative | SteamCharts | Only for Steam-listed titles |
+
+`genre` and `game_age` are attributes we derived, everything else comes
+straight from the source.
+
+## FAIR and CARE
+
+**FAIR.** The data is Findable — esportsearnings has stable URLs per
+year and per game. Accessibility is OK through the public site, but
+there is no official API, so programmatic access depends on scraping
+that might break if the site's layout changes. Interoperability is
+limited: the data is published as HTML tables rather than a documented
+schema. Reusability is the weakest link — the site doesn't publish a
+formal license, and the terms of use allow personal and academic
+reference but restrict bulk reproduction, which is why we cite heavily
+and archive only what we need.
+
+**CARE.** The data describes individuals (players' names, nationalities,
+tournament winnings). None of that was collected with explicit
+informed consent from the players themselves, since it originates from
+public tournament records. We treat player-level attributes cautiously
+— we aggregate to country level wherever we can, and we do not build
+any kind of ranking of specific named individuals. Community benefit
+and ethics are the dimensions we're most aware of here: the platform
+benefits the esports community at large, but individual players are
+the labour behind the numbers and deserve that framing.
+
+# Exploratory data analysis {#sec-eda}
+
+## Shape of the top-games table
+
+```{r}
+#| label: tbl-overview
+#| tbl-cap: "Rows per year in the top-games table after tidying."
+#| echo: false
+games_by_year |>
+  count(year, name = "games") |>
+  gt() |>
+  cols_label(year = "Year", games = "Games with recorded earnings") |>
+  fmt_number(columns = games, decimals = 0)
+```
+
+<!-- Each team member is responsible for at least one table and one
+     plot. We'll label authorship with the Code Header above each
+     chunk once the analysis is in place. -->
+
+## Prize money over time
+
+```{r}
+#| label: fig-total-by-year
+#| fig-cap: "Total reported prize money across all top games, by year."
+#| fig-alt: "A line plot showing total annual esports prize money climbing from roughly 30 million USD in 2014 to over 200 million in 2019, then falling during the pandemic and recovering afterwards."
+#| fig-width: 6
+#| fig-height: 3.5
+games_by_year |>
+  group_by(year) |>
+  summarise(total_usd = sum(total_earnings_usd, na.rm = TRUE),
+            .groups = "drop") |>
+  ggplot(aes(x = year, y = total_usd / 1e6)) +
+  geom_line(linewidth = 0.7) +
+  geom_point(size = 1.5) +
+  scale_x_continuous(breaks = scales::pretty_breaks()) +
+  labs(
+    x = "Year",
+    y = "Total prize money (USD millions)",
+    caption = "Source: esportsearnings.com"
+  ) +
+  theme_minimal(base_size = 10)
+```
+
+*(placeholder narrative)* The rough shape is easy to describe: the
+industry climbs steadily from 2014, spikes around 2018–2019 when
+Fortnite brought in huge one-off prize pools, and then gets disrupted
+by the pandemic before settling into a new baseline.
+
+## Genre mix
+
+*(to fill in once genre coding is done — the plan is a stacked area
+chart with MOBA, FPS, Battle Royale, Fighting, Card, Other.)*
+
+## Concentration of earnings
+
+*(Lorenz-style cumulative plot of share of prize money across the top
+N games, by year. Will also compute a simple Gini-like concentration
+index and report it in a small table.)*
+
+# Discussion {#sec-discussion}
+
+*(Written once the plots are in. Keep the claims honest — this is
+EDA, not inference.)*
+
+# Author contribution {#sec-authors}
+
+We follow the [CRediT taxonomy](https://credit.niso.org/) here.
+
+- **[Name 1]:** Conceptualization, Data curation (scraping and
+  tidying), Investigation, Visualization (time series), Writing –
+  original draft.
+- **[Name 2]:** Conceptualization, Data curation (Steam match),
+  Formal analysis (concentration measures), Visualization (tables),
+  Writing – review & editing.
+
+# References {.unnumbered}
+
+<!-- BibTeX entries live in references.bib -->
+
+::: {#refs}
+:::
+
+# Code appendix {.unnumbered}
+
+```{r}
+#| label: appendix
+#| echo: true
+#| eval: false
+
+# -- setup chunk --------------------------------------------------
+# (see top of file)
+
+# -- scraping -----------------------------------------------------
+# see data-raw/01_scrape_esports.R
+
+# -- tidying ------------------------------------------------------
+# TODO: move the tidy steps here once finalized
+```
