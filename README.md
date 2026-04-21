@@ -1,26 +1,69 @@
-# Project Title
+# Sec#_CP_[Name1]_[Name2]
 
-Write a 1-2 sentences that quickly and clearly convey what your repo is for.
+Stat 184 course project, Spring 2026. We're looking at how the esports
+industry has shifted over the last ten years — prize pools, genre mix,
+and geographic distribution — using data scraped from
+`esportsearnings.com` alongside playerbase and viewership numbers from
+Steam and Twitch.
 
-## Overview
+## Team
 
-Expand on those introductory sentences with a brief but informative description of your project's purpose and goals. This section should help visitors decide whether they should dig deeper into your repo/project.
+| Name      | Email              | Primary role                     |
+|-----------|--------------------|----------------------------------|
+| Junbo Zhao  | jzz5658@psu.edu    | Scraping, tidying, plots         |
+| [Name 2]  | [psuid]@psu.edu    | Supplementary data, tables       |
 
-### Interesting Insight (Optional)
+## Repo layout
 
-This is optional but highly recommended. You'll include one interesting insight from your project as part of the README. This insight is most effective when you include a visual. Keep in mind that this visual must be included as an image file (e.g., JPG, PNG, etc.). You can export plots created with `{ggplot2}` by using the function `ggsave`.
+```
+.
+├── project.qmd         # the report (renders to PDF)
+├── plan.md             # Checkpoint #2 plan
+├── references.bib      # BibTeX entries for the report
+├── apa7.csl            # citation style (dropped in from the template)
+├── data-raw/           # scraping scripts + cached HTML
+│   └── 01_scrape_esports.R
+├── data/               # tidied csv / rds files (git-tracked)
+├── R/                  # helper functions sourced from the qmd
+│   └── scrape_helpers.R
+├── figures/            # exported plots (only if needed outside qmd)
+├── .gitignore
+└── .lintr              # BOAST / tidyverse lint config
+```
 
-## Data Sources and Acknowledgements
+## How to reproduce
 
-Be sure to list where you got any data used within the project. Be sure to acknowledge any one whose work or elements you're drawing upon.
+1. Clone the repo.
+2. Open the project in RStudio (there's an `.Rproj` once someone on the
+   team generates one — see TODO below).
+3. Run the scraper once: `source("data-raw/01_scrape_esports.R")`. It
+   caches pages under `data-raw/cache/`, so re-runs are fast.
+4. Render the report: `quarto render project.qmd`.
 
-## Current Plan
+Packages we rely on: `rvest`, `polite`, `dplyr`, `tidyr`, `ggplot2`,
+`gt`, `janitor`, `fs`, `purrr`, `readr`, `stringr`, `lubridate`.
 
-Provide some information about what you intend to do with the project. You can additionally refer the visitor to your detailed plan document.
+## Coding style
 
-## Repo Structure
+Tidyverse style guide. We lint with `{lintr}` using the `.lintr` file
+checked into the repo before every PR.
 
-Use this section to explain the structure of your repo. This should help visitors quickly figure out where they should look to find certain elements. Further, you can use this space to highlight and briefly explain important/key files in the repo.
+## Git workflow
+
+- `main` is the protected branch. Do not push to `main` directly.
+- Each of us works on a personal branch: `dev-name1`, `dev-name2`.
+- Open a Pull Request when your branch is ready. The other person
+  reviews and merges. At least one approval before merge.
+- Commit messages follow the short imperative style, e.g.
+  `Add 2019 scrape and handle missing country column`.
+
+## TODO before Checkpoint #3
+
+- [ ] Add `.Rproj` and lockfile.
+- [ ] First end-to-end scrape + tidy.
+- [ ] First EDA plot committed.
+- [ ] README links added to plan and references.
+
 
 
 ## Authors
