@@ -11,7 +11,8 @@ Steam and Twitch.
 | Name      | Email              | Primary role                     |
 |-----------|--------------------|----------------------------------|
 | Junbo Zhao  | jzz5658@psu.edu    | Scraping, tidying, plots         |
-| [Name 2]  | [psuid]@psu.edu    | Supplementary data, tables       |
+| Seokyoung Kim  | smk7032@psu.edu    | Supplementary data, tables       |
+|-----------|--------------------|----------------------------------|
 
 ## Repo layout
 
