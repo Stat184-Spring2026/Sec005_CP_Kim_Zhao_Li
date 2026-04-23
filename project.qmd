@@ -2,7 +2,7 @@
 title: "Whose game is it? Ten years of esports earnings"
 author:
   - name: "[Name 1]"
-  - name: "[Name 2]"
+  - name: "JiXianLi"
 date: today
 format:
   pdf:
