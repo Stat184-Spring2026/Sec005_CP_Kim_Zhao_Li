@@ -55,6 +55,13 @@ Analysis of the graph narrative
 ```
 Analysis of the graph narrative
 
+\newpage
+
+## Summary
+Analysis of the graph narrative
+
+\newpage
+
 # Code Appendix
 ```{r}
 #| label: codeAppend
