@@ -25,6 +25,7 @@ execute:
 ```{r}
 library(tidyverse)
 library(ggplot2)
+library(scales)
 ```
 
 # Introduction
@@ -41,7 +42,7 @@ Analysis of the graph narrative
 
 \newpage
 
-## Mean VS. Medium
+## Mean VS. Medium(JunBoZhao)
 ```{r}
 #type the code of graph there
 ```
@@ -49,15 +50,31 @@ Analysis of the graph narrative
 
 \newpage
 
-## The Relationship Between The Number Of Players And The Prize Money Of The Tournament
+## The Relationship Between The Number Of Players And The Prize Money Of The Tournament(JiXianLi)
 ```{r}
-#type the code of graph there
+#| label: fig-PlayersAndPrice
+#| fig-cap: "The Relationship Between The Number Of Players And The Prize Money Of The Tournament"
+#| fig-pos: H
+#| fig-width: 9
+#| fig-height: 4.5
+
+dataTable <- read.csv("Esports_Stats.csv", check.names = FALSE)
+ggplot(dataTable, aes(x = `Total Active Players`, y = `Total Prize Money`)) +
+  geom_line(color = "skyblue", linewidth = 1) +
+  geom_point(color = "darkblue", size = 2) +
+  scale_x_continuous(labels = comma) +
+  scale_y_continuous(labels = comma) +
+  labs(
+    title = "The Relationship Between Total Active Players and Total Prize Money Of The Tournament",
+    x = "Total Active Players",
+    y = "Total Prize Money Of The Tournament (USD)"
+  )
 ```
-Analysis of the graph narrative
+As the @fig-PlayersAndPrice shown, overall, there is a strong positive correlation.That is, the more active players there are, the higher the total prize money for the event. This is intuitive, as an increase in participants usually means an expansion of the market size, which attracts more sponsors, viewers and capital inflows, thereby raising the prize pool. Moreover, this line is not a uniform straight line, it can be split into three parts. First is player number from 0 to 10000, in this case the growth of bonuses has been very slow, which is in line with the early stage of the e-sports industry. At that time, the player base size was small and the commercialization level was low. Second, is player number from 10001 to 22000, in this case the slope has significantly steepened, and the bonus amount has rapidly increased from several hundred million dollars to nearly 200 million dollars. This indicates that within this range, the increase in bonus for each additional active player is much higher than in the early stages. Finally, is player number greater than 22001. An interesting phenomenon emerges here: the number of players decreases first and then rises sharply. This indicates that the relationship between the number of players and the prize money is no longer strictly linear. In some years, there are more players but the prize money is actually lower. Based on the observation, this "abnormal" period was from 2020 to 2021, which was the period of the COVID-19 pandemic. It makes sense because during the pandemic, a lot of people are staying at home, especially Chinese people (due to the policy). People staying at home may use video games to occupy their leisure time, but the tournaments cannot able to be held.
 
 \newpage
 
-## Summary
+# Summary
 Analysis of the graph narrative
 
 \newpage
