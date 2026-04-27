@@ -1,5 +1,5 @@
 ---
-title: "Ten years of esports earning, how does the total bonus change over year!"
+title: "The Evolution of Esports Earnings: A Statistical Analysis of Prize Money, Tournaments, and Players (1998–2025)"
 author:
   - name: "JiXianLi"
   - name: "Name"
@@ -29,7 +29,7 @@ library(scales)
 ```
 
 # Introduction
-type the introduction here
+E-sports has evolved from a small group of enthusiasts' entertainment into a global industry over the past three decades. At the same time, the number of professional players, the frequency of the competition, and the number of players are continuously increasing, which leads to esports becoming a formal exercise. However, we still lack quantitative research on the long-term growth model of e-sports. For instance, over the past nearly three decades, how has the total prize money of e-sports changed over time? Are there significant differences in the distribution of individual player incomes between different years? And is there a clear correlation between the growth of active players and the total prize money of. In order to answer these questions, this report records the data of e-sports from 1998 to 2025, including total award money, total number of tournaments, mean and median tournament award pool, and mean and median earnings per player. events? This report's analysis part mainly includes three parts: the trend of the award pool of the tournaments over the years, the difference between the mean and the median, and the relationship between the number of players and the award pool of the tournament.
 
 \newpage
 
@@ -50,10 +50,10 @@ Analysis of the graph narrative
 
 \newpage
 
-## The Relationship Between The Number Of Players And The Prize Money Of The Tournament(JiXianLi)
+## The Relationship Between The Number Of Players And The Award Pool Of The Tournament(JiXianLi)
 ```{r}
 #| label: fig-PlayersAndPrice
-#| fig-cap: "The Relationship Between The Number Of Players And The Prize Money Of The Tournament"
+#| fig-cap: "Relationship Between Total Players and Award Pool Of Tournament"
 #| fig-pos: H
 #| fig-width: 9
 #| fig-height: 4.5
@@ -65,7 +65,7 @@ ggplot(dataTable, aes(x = `Total Active Players`, y = `Total Prize Money`)) +
   scale_x_continuous(labels = comma) +
   scale_y_continuous(labels = comma) +
   labs(
-    title = "The Relationship Between Total Active Players and Total Prize Money Of The Tournament",
+    title = "Relationship Between Total Players and Award Pool Of Tournament",
     x = "Total Active Players",
     y = "Total Prize Money Of The Tournament (USD)"
   )
