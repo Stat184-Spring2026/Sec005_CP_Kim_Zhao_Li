@@ -1,222 +1,162 @@
 ---
-title: "Whose game is it? Ten years of esports earnings"
+title: "The Evolution of Esports Earnings: A Statistical Analysis of Prize Money, Tournaments, and Players (1998–2025)"
 author:
-  - name: "[Name 1]"
-  - name: "[Name 2]"
+  - name: "JiXianLi"
+  - name: "Junbo Zhao"
+  - name: "Name"
 date: today
 format:
   pdf:
-    documentclass: article
-    fontsize: 11pt
-    geometry: margin=1in
+    toc: false
     number-sections: true
+    number-depth: 5
     fig-align: center
-    fig-pos: "H"
-    keep-tex: false
+    cap-location: top
+    geometry:
+      - top=1in
+      - left=1in
+      - right=1in
+      - bottom=1in
+    colorlinks: true
 execute:
   echo: false
   warning: false
-  message: false
-bibliography: references.bib
-csl: apa7.csl
 ---
-
 ```{r}
-#| label: setup
-#| include: false
-# Style guide: Tidyverse (https://style.tidyverse.org/)
-# Primary author: [Name 1]
-# Reviewed by:    [Name 2]
-
-library(dplyr)
-library(tidyr)
-library(readr)
+library(tidyverse)
 library(ggplot2)
-library(gt)
-library(stringr)
-library(here)
-
-# helpers live in R/ so we don't clutter the report body
-source(here("R", "scrape_helpers.R"))
-
-# pre-tidied data loaded from data/ (produced by data-raw scripts)
-games_by_year <- read_csv(here("data", "games_by_year.csv"),
-                          show_col_types = FALSE)
+library(scales)
 ```
 
-# Introduction {#sec-intro}
+# Introduction
+E-sports has evolved from a small group of enthusiasts' entertainment into a global industry over the past three decades. At the same time, the number of professional players, the frequency of the competition, and the number of players are continuously increasing, which leads to esports becoming a formal exercise. However, we still lack quantitative research on the long-term growth model of e-sports. For instance, over the past nearly three decades, how has the total prize money of e-sports changed over time? Are there significant differences in the distribution of individual player incomes between different years? And is there a clear correlation between the growth of active players and the total prize money of. In order to answer these questions, this report records the data of e-sports from 1998 to 2025, including total award money, total number of tournaments, mean and median tournament award pool, and mean and median earnings per player. events? This report's analysis part mainly includes three parts: the trend of the award pool of the tournaments over the years, the difference between the mean and the median, and the relationship between the number of players and the award pool of the tournament.
 
-Competitive video gaming has gone from LAN parties in basements to
-stadium finals with eight-figure prize pools in about fifteen years.
-Our team wanted to see what that trajectory actually looks like once
-you pull the receipts: which titles have pulled the biggest cheques,
-how that breakdown has moved between genres, and whether the money
-has tracked the games people are actually playing.
+\newpage
 
-Two of us follow esports casually — one of us has been watching the
-International since 2015, the other got pulled in through Valorant
-— but we're not going to lean on that. We'll treat the data as the
-primary source of truth and keep our priors in check.
-
-# Data and provenance {#sec-data}
-
-## Primary source
-
-Our main data came from the yearly "Top Games" pages on
-`esportsearnings.com`, pulled for 2014 through 2024. The site is a
-community-maintained database. Tournament results are submitted and
-reviewed by volunteer editors; prize payouts get cross-checked against
-official brackets and organizer announcements where available. A short
-description of the editorial policy is linked in the site footer
-[@esportsearnings_about].
-
-We scraped with `{rvest}` wrapped in `{polite}` so the session respects
-`robots.txt` and throttles to one request every few seconds. Raw HTML
-is cached under `data-raw/cache/` so the scrape is reproducible
-without repeatedly hitting the server. See the code appendix for the
-full scraper.
-
-## Supplementary source
-
-To connect earnings to playerbase we pulled monthly peak concurrent
-players from SteamDB / SteamCharts via their public endpoints. Only
-PC titles that have a Steam page got matched; the remainder (console
-fighters, mobile-only esports) are flagged and handled separately in
-our analysis.
-
-## Attributes we focus on
-
-| Attribute | Type | Source | Notes |
-|-----------|------|--------|-------|
-| `year` | Quantitative (discrete) | esportsearnings | 2014–2024 |
-| `game` | Categorical | esportsearnings | Title as listed on the site |
-| `genre` | Categorical | Manual coding | MOBA, FPS, BR, Fighting, Card, Other |
-| `total_earnings_usd` | Quantitative | esportsearnings | Sum of tournament prize money that year |
-| `tournaments` | Quantitative | esportsearnings | Count of ranked events that year |
-| `active_players` | Quantitative | esportsearnings | Distinct players earning prize money |
-| `release_year` | Quantitative | esportsearnings game page | Used to compute game age |
-| `steam_peak_ccu` | Quantitative | SteamCharts | Only for Steam-listed titles |
-
-`genre` and `game_age` are attributes we derived, everything else comes
-straight from the source.
-
-## FAIR and CARE
-
-**FAIR.** The data is Findable — esportsearnings has stable URLs per
-year and per game. Accessibility is OK through the public site, but
-there is no official API, so programmatic access depends on scraping
-that might break if the site's layout changes. Interoperability is
-limited: the data is published as HTML tables rather than a documented
-schema. Reusability is the weakest link — the site doesn't publish a
-formal license, and the terms of use allow personal and academic
-reference but restrict bulk reproduction, which is why we cite heavily
-and archive only what we need.
-
-**CARE.** The data describes individuals (players' names, nationalities,
-tournament winnings). None of that was collected with explicit
-informed consent from the players themselves, since it originates from
-public tournament records. We treat player-level attributes cautiously
-— we aggregate to country level wherever we can, and we do not build
-any kind of ranking of specific named individuals. Community benefit
-and ethics are the dimensions we're most aware of here: the platform
-benefits the esports community at large, but individual players are
-the labour behind the numbers and deserve that framing.
-
-# Exploratory data analysis {#sec-eda}
-
-## Shape of the top-games table
-
+# Data Analysis
+## Total Prize Trend
 ```{r}
-#| label: tbl-overview
-#| tbl-cap: "Rows per year in the top-games table after tidying."
-#| echo: false
-games_by_year |>
-  count(year, name = "games") |>
-  gt() |>
-  cols_label(year = "Year", games = "Games with recorded earnings") |>
-  fmt_number(columns = games, decimals = 0)
+#type the code of graph there
 ```
+Analysis of the graph narrative
 
-<!-- Each team member is responsible for at least one table and one
-     plot. We'll label authorship with the Code Header above each
-     chunk once the analysis is in place. -->
+\newpage
 
-## Prize money over time
-
+## Mean VS. Medium(JunBoZhao)
 ```{r}
-#| label: fig-total-by-year
-#| fig-cap: "Total reported prize money across all top games, by year."
-#| fig-alt: "A line plot showing total annual esports prize money climbing from roughly 30 million USD in 2014 to over 200 million in 2019, then falling during the pandemic and recovering afterwards."
-#| fig-width: 6
-#| fig-height: 3.5
-games_by_year |>
-  group_by(year) |>
-  summarise(total_usd = sum(total_earnings_usd, na.rm = TRUE),
-            .groups = "drop") |>
-  ggplot(aes(x = year, y = total_usd / 1e6)) +
-  geom_line(linewidth = 0.7) +
-  geom_point(size = 1.5) +
-  scale_x_continuous(breaks = scales::pretty_breaks()) +
+#| label: fig-MeanVsMedian
+#| fig-cap: "Mean and median over time, on a log scale. Left: prize pool per tournament. Right: earnings per active player."
+#| fig-pos: H
+#| fig-width: 9
+#| fig-height: 4.2
+
+dataTable <- read.csv("Esports_Stats.csv", check.names = FALSE)
+
+mvmLong <- dataTable |>
+  select(year,
+         `Mean Tournament Prize Pool`,
+         `Median Tournament Prize Pool`,
+         `Mean Earnings/Player`,
+         `Median Earnings/Player`) |>
+  pivot_longer(-year, names_to = "metric", values_to = "value") |>
+  mutate(
+    panel  = ifelse(grepl("Tournament", metric),
+                    "Per tournament prize pool",
+                    "Per player earnings"),
+    centerType = ifelse(grepl("^Mean", metric), "Mean", "Median")
+  )
+
+ggplot(mvmLong, aes(x = year, y = value, color = centerType)) +
+  geom_line(linewidth = 0.8) +
+  geom_point(size = 1.6) +
+  facet_wrap(~ panel, scales = "free_y") +
+  scale_y_log10(labels = dollar) +
+  scale_color_manual(values = c("Mean" = "#c0392b", "Median" = "#2c3e50")) +
   labs(
-    x = "Year",
-    y = "Total prize money (USD millions)",
-    caption = "Source: esportsearnings.com"
+    title = "Where the average meets the typical",
+    x = "Year", y = "USD (log scale)", color = NULL
   ) +
-  theme_minimal(base_size = 10)
+  theme_minimal(base_size = 11) +
+  theme(legend.position = "top",
+        strip.text = element_text(face = "bold"))
 ```
 
-*(placeholder narrative)* The rough shape is easy to describe: the
-industry climbs steadily from 2014, spikes around 2018–2019 when
-Fortnite brought in huge one-off prize pools, and then gets disrupted
-by the pandemic before settling into a new baseline.
-
-## Genre mix
-
-*(to fill in once genre coding is done — the plan is a stacked area
-chart with MOBA, FPS, Battle Royale, Fighting, Card, Other.)*
-
-## Concentration of earnings
-
-*(Lorenz-style cumulative plot of share of prize money across the top
-N games, by year. Will also compute a simple Gini-like concentration
-index and report it in a small table.)*
-
-# Discussion {#sec-discussion}
-
-*(Written once the plots are in. Keep the claims honest — this is
-EDA, not inference.)*
-
-# Author contribution {#sec-authors}
-
-We follow the [CRediT taxonomy](https://credit.niso.org/) here.
-
-- **[Name 1]:** Conceptualization, Data curation (scraping and
-  tidying), Investigation, Visualization (time series), Writing –
-  original draft.
-- **[Name 2]:** Conceptualization, Data curation (Steam match),
-  Formal analysis (concentration measures), Visualization (tables),
-  Writing – review & editing.
-
-# References {.unnumbered}
-
-<!-- BibTeX entries live in references.bib -->
-
-::: {#refs}
-:::
-
-# Code appendix {.unnumbered}
-
 ```{r}
-#| label: appendix
+#| label: fig-MMratio
+#| fig-cap: "Ratio of mean to median over time. A value of 1 (dashed line) would mean a perfectly balanced distribution; everything above it is right-skew."
+#| fig-pos: H
+#| fig-width: 9
+#| fig-height: 3.5
+
+dataTable <- read.csv("Esports_Stats.csv", check.names = FALSE)
+
+ratioLong <- dataTable |>
+  transmute(
+    year,
+    `Tournament prize pool` =
+      `Mean Tournament Prize Pool` / `Median Tournament Prize Pool`,
+    `Per-player earnings`   =
+      `Mean Earnings/Player`     / `Median Earnings/Player`
+  ) |>
+  pivot_longer(-year, names_to = "metric", values_to = "ratio")
+
+ggplot(ratioLong, aes(x = year, y = ratio, color = metric)) +
+  geom_hline(yintercept = 1, linetype = "dashed", color = "grey60") +
+  geom_line(linewidth = 0.8) +
+  geom_point(size = 1.6) +
+  scale_color_manual(values = c("Tournament prize pool" = "#3b7a57",
+                                "Per-player earnings"   = "#d68c45")) +
+  labs(
+    title = "How skewed was each year?",
+    x = "Year", y = "Mean / Median", color = NULL
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(legend.position = "top")
+```
+
+Mean and median of the same prize-pool numbers tell two pretty different stories. The mean treats every dollar equally, so a single huge tournament like The International can drag the whole average up. The median throws that information away and just asks what a typical tournament looks like. The gap between them is, in a way, the whole point of doing this comparison.
+
+@fig-MeanVsMedian puts both side by side on a log scale. The raw numbers span several orders of magnitude (the median tournament was paying \$250 in 2010 while the mean was already past \$6,000), so a linear axis would just look like a long flat line followed by a spike. The two curves stay far apart through almost the entire history of the data. Between roughly 2010 and 2021, the gap on the tournament side is enormous: median around the low hundreds to low thousands, mean in the tens of thousands. We computed the mean-to-median ratio explicitly in @fig-MMratio and the value sits between about 12 and 29 for most of those years. So for every The International or LoL Worlds the website tracks, there are dozens of small grassroots tournaments paying out a few hundred bucks.
+
+The per-player side shows the same shape, just less extreme. Mean per-player earnings are usually 3 to 7 times the median, peaking around 15x in 2014. This is the same thing you hear in conversations about CEO pay: a small number of very high earners pull the average way above the middle, while the typical player is making something much more modest.
+
+The thing we did not expect is what happens after 2022. The median tournament prize pool jumps from about \$1,500 in 2021 to over \$18,000 in 2025, and the mean-to-median ratio collapses from ~26 down to ~3. The mean is also climbing, but the median is climbing faster, which is what closes the gap. The total number of tournaments tells us why: it drops from roughly 6,300 in 2019 to about 1,700 in 2025. The long tail of tiny local events seems to be drying up, leaving a smaller pool of mid-to-large tournaments that are much more uniform in size. So the recent narrowing of the mean-vs-median gap is not really good news for the casual scene. It is the casual scene disappearing, with mostly the well-funded events left standing.
+
+\newpage
+
+## The Relationship Between The Number Of Players And The Award Pool Of The Tournament(JiXianLi)
+```{r}
+#| label: fig-PlayersAndPrice
+#| fig-cap: "Relationship Between Total Players and Award Pool Of Tournament"
+#| fig-pos: H
+#| fig-width: 9
+#| fig-height: 4.5
+
+dataTable <- read.csv("Esports_Stats.csv", check.names = FALSE)
+ggplot(dataTable, aes(x = `Total Active Players`, y = `Total Prize Money`)) +
+  geom_line(color = "skyblue", linewidth = 1) +
+  geom_point(color = "darkblue", size = 2) +
+  scale_x_continuous(labels = comma) +
+  scale_y_continuous(labels = comma) +
+  labs(
+    title = "Relationship Between Total Players and Award Pool Of Tournament",
+    x = "Total Active Players",
+    y = "Total Prize Money Of The Tournament (USD)"
+  )
+```
+As the @fig-PlayersAndPrice shown, overall, there is a strong positive correlation.That is, the more active players there are, the higher the total prize money for the event. This is intuitive, as an increase in participants usually means an expansion of the market size, which attracts more sponsors, viewers and capital inflows, thereby raising the prize pool. Moreover, this line is not a uniform straight line, it can be split into three parts. First is player number from 0 to 10000, in this case the growth of bonuses has been very slow, which is in line with the early stage of the e-sports industry. At that time, the player base size was small and the commercialization level was low. Second, is player number from 10001 to 22000, in this case the slope has significantly steepened, and the bonus amount has rapidly increased from several hundred million dollars to nearly 200 million dollars. This indicates that within this range, the increase in bonus for each additional active player is much higher than in the early stages. Finally, is player number greater than 22001. An interesting phenomenon emerges here: the number of players decreases first and then rises sharply. This indicates that the relationship between the number of players and the prize money is no longer strictly linear. In some years, there are more players but the prize money is actually lower. Based on the observation, this "abnormal" period was from 2020 to 2021, which was the period of the COVID-19 pandemic. It makes sense because during the pandemic, a lot of people are staying at home, especially Chinese people (due to the policy). People staying at home may use video games to occupy their leisure time, but the tournaments cannot able to be held.
+
+\newpage
+
+# Summary
+Analysis of the graph narrative
+
+\newpage
+
+# Code Appendix
+```{r}
+#| label: codeAppend
+#| ref-label: !expr knitr::all_labels()
 #| echo: true
 #| eval: false
-
-# -- setup chunk --------------------------------------------------
-# (see top of file)
-
-# -- scraping -----------------------------------------------------
-# see data-raw/01_scrape_esports.R
-
-# -- tidying ------------------------------------------------------
-# TODO: move the tidy steps here once finalized
 ```
