@@ -3,7 +3,7 @@ title: "A Statistical Analysis of Prize Money, Tournaments, and Players (1998–
 author:
   - name: "JiXianLi"
   - name: "Seokyoung Kim"
-  - name: "Name"
+  - name: "Junbo Zhao"
 date: today
 format: 
   pdf: 
@@ -115,12 +115,85 @@ A key insight from this graph is that **prize money and tournament volume do not
 
 ## Mean VS. Medium(JunBoZhao)
 ```{r}
-#type the code of graph there
+#| label: fig-MeanVsMedian
+#| fig-cap: "Mean and median over time, on a log scale. Left: prize pool per tournament. Right: earnings per active player."
+#| fig-pos: H
+#| fig-width: 9
+#| fig-height: 4.2
+
+dataTable <- read.csv("Esports_Stats.csv", check.names = FALSE)
+
+mvmLong <- dataTable |>
+  select(year,
+         `Mean Tournament Prize Pool`,
+         `Median Tournament Prize Pool`,
+         `Mean Earnings/Player`,
+         `Median Earnings/Player`) |>
+  pivot_longer(-year, names_to = "metric", values_to = "value") |>
+  mutate(
+    panel  = ifelse(grepl("Tournament", metric),
+                    "Per tournament prize pool",
+                    "Per player earnings"),
+    centerType = ifelse(grepl("^Mean", metric), "Mean", "Median")
+  )
+
+ggplot(mvmLong, aes(x = year, y = value, color = centerType)) +
+  geom_line(linewidth = 0.8) +
+  geom_point(size = 1.6) +
+  facet_wrap(~ panel, scales = "free_y") +
+  scale_y_log10(labels = dollar) +
+  scale_color_manual(values = c("Mean" = "#c0392b", "Median" = "#2c3e50")) +
+  labs(
+    title = "Where the average meets the typical",
+    x = "Year", y = "USD (log scale)", color = NULL
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(legend.position = "top",
+        strip.text = element_text(face = "bold"))
 ```
 
+```{r}
+#| label: fig-MMratio
+#| fig-cap: "Ratio of mean to median over time. A value of 1 (dashed line) would mean a perfectly balanced distribution; everything above it is right-skew."
+#| fig-pos: H
+#| fig-width: 9
+#| fig-height: 3.5
+
+dataTable <- read.csv("Esports_Stats.csv", check.names = FALSE)
+
+ratioLong <- dataTable |>
+  transmute(
+    year,
+    `Tournament prize pool` =
+      `Mean Tournament Prize Pool` / `Median Tournament Prize Pool`,
+    `Per-player earnings`   =
+      `Mean Earnings/Player`     / `Median Earnings/Player`
+  ) |>
+  pivot_longer(-year, names_to = "metric", values_to = "ratio")
+
+ggplot(ratioLong, aes(x = year, y = ratio, color = metric)) +
+  geom_hline(yintercept = 1, linetype = "dashed", color = "grey60") +
+  geom_line(linewidth = 0.8) +
+  geom_point(size = 1.6) +
+  scale_color_manual(values = c("Tournament prize pool" = "#3b7a57",
+                                "Per-player earnings"   = "#d68c45")) +
+  labs(
+    title = "How skewed was each year?",
+    x = "Year", y = "Mean / Median", color = NULL
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(legend.position = "top")
+```
+\newpage
+
 ### Analysis
+We wanted to compare the mean and median here because they pick up on different things. The mean gets pulled around by outliers, one massive tournament like The International will push it way up even if most events that year were small. The median does not care about that at all; it just shows what the middle tournament looks like. So when these two numbers are far apart, it usually means the distribution is really skewed.
 
+**First**, looking at @fig-MeanVsMedian, we had to use a log scale because the range is kind of ridiculous. In 2010 the median tournament was paying around \$250, but the mean was already over \$6,000. On a normal axis you would not even be able to see the median line. From about 2010 to 2021, the two lines on the tournament side barely look related: the median stays somewhere in the low hundreds to low thousands while the mean is up in the tens of thousands. We plotted the actual ratio in @fig-MMratio to get a clearer picture, and for most of that stretch it is somewhere between 12x and 29x. Basically, for every big event like LoL Worlds there were a ton of small local tournaments that only paid out a couple hundred dollars, and those kept dragging the median down.
 
+**Second**, on the player earnings side, the gap is there too but not as extreme. The mean is usually around 3 to 7 times the median, with a peak at about 15x in 2014. So a handful of top players were making a lot, but most people competing were earning way less than the average would suggest.
+
+What caught our attention was the shift after 2022. The median tournament prize pool went from roughly \$1,500 in 2021 up to over \$18,000 by 2025, and the mean-to-median ratio dropped from around 26 all the way to about 3. At first that looks like a good thing, like the money is spreading out more evenly. But when we checked the total number of tournaments, the count went from about 6,300 in 2019 down to around 1,700 in 2025. So what actually happened is a lot of the smaller grassroots events stopped running. The tournaments that are left tend to be bigger and better funded, which is why the median jumped up and closed the gap with the mean. It is less that the distribution got more equal and more that the bottom end just went away.
 
 \newpage
 
@@ -228,10 +301,65 @@ p <- ggplot(df, aes(x = year)) +
   )
 p
 
-# Section 2: Mean vs. Median (Change this appropriately or you can just use this.)
+# Section 2: Mean vs. Median
 # Author: Junbo Zhao
 
-#{Your code here}
+# Figure 1
+dataTable <- read.csv("Esports_Stats.csv", check.names = FALSE)
+
+mvmLong <- dataTable |>
+  select(year,
+         `Mean Tournament Prize Pool`,
+         `Median Tournament Prize Pool`,
+         `Mean Earnings/Player`,
+         `Median Earnings/Player`) |>
+  pivot_longer(-year, names_to = "metric", values_to = "value") |>
+  mutate(
+    panel  = ifelse(grepl("Tournament", metric),
+                    "Per tournament prize pool",
+                    "Per player earnings"),
+    centerType = ifelse(grepl("^Mean", metric), "Mean", "Median")
+  )
+
+ggplot(mvmLong, aes(x = year, y = value, color = centerType)) +
+  geom_line(linewidth = 0.8) +
+  geom_point(size = 1.6) +
+  facet_wrap(~ panel, scales = "free_y") +
+  scale_y_log10(labels = dollar) +
+  scale_color_manual(values = c("Mean" = "#c0392b", "Median" = "#2c3e50")) +
+  labs(
+    title = "Where the average meets the typical",
+    x = "Year", y = "USD (log scale)", color = NULL
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(legend.position = "top",
+        strip.text = element_text(face = "bold"))
+
+# Figure 2
+dataTable <- read.csv("Esports_Stats.csv", check.names = FALSE)
+
+ratioLong <- dataTable |>
+  transmute(
+    year,
+    `Tournament prize pool` =
+      `Mean Tournament Prize Pool` / `Median Tournament Prize Pool`,
+    `Per-player earnings`   =
+      `Mean Earnings/Player`     / `Median Earnings/Player`
+  ) |>
+  pivot_longer(-year, names_to = "metric", values_to = "ratio")
+
+ggplot(ratioLong, aes(x = year, y = ratio, color = metric)) +
+  geom_hline(yintercept = 1, linetype = "dashed", color = "grey60") +
+  geom_line(linewidth = 0.8) +
+  geom_point(size = 1.6) +
+  scale_color_manual(values = c("Tournament prize pool" = "#3b7a57",
+                                "Per-player earnings"   = "#d68c45")) +
+  labs(
+    title = "How skewed was each year?",
+    x = "Year", y = "Mean / Median", color = NULL
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(legend.position = "top")
 
 # Section 3: The Relationship Between The Number Of Players And The Award Pool Of The Tournament
 # Author: JiXian Li
