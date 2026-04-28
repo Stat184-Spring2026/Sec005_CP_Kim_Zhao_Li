@@ -1,13 +1,14 @@
 ---
-title: "The Evolution of Esports Earnings: A Statistical Analysis of Prize Money, Tournaments, and Players (1998–2025)"
+title: "A Statistical Analysis of Prize Money, Tournaments, and Players (1998–2025)"
 author:
   - name: "JiXianLi"
-  - name: "Name"
+  - name: "Seokyoung Kim"
   - name: "Name"
 date: today
 format: 
   pdf: 
-    toc: false
+    toc: true
+    toc-depth: 2
     number-sections: true
     number-depth: 5
     fig-align: center
@@ -34,11 +35,81 @@ E-sports has evolved from a small group of enthusiasts' entertainment into a glo
 \newpage
 
 # Data Analysis
-## Total Prize Trend
+## The Relationship between the Total Prize Pool and The Number of Tournaments
 ```{r}
-#type the code of graph there
+#| label: fig-PrizeMoney-Tournaments
+#| fig-cap: "Annual esports prize money (bars, left axis) and total tournaments held (line, right axis) from 1998 to 2025. Prize money values have been scaled to millions of USD for readability."
+df <- read_csv("Esports_Stats.csv") |>
+  rename(
+    year              = year,
+    prize_money       = `Total Prize Money`,
+    total_tournaments = `Total Tournaments`
+  ) |>
+  select(year, prize_money, total_tournaments)
+
+scale_factor <- max(df$prize_money) / max(df$total_tournaments)
+
+col_prize  <- "blue"   # blue  — prize money
+col_tourn  <- "orange"   # orange — tournament
+
+p <- ggplot(df, aes(x = year)) +
+
+  geom_col(
+    aes(y = prize_money),
+    fill  = col_prize,
+    alpha = 0.85,
+    width = 0.7
+  ) +
+  geom_line(
+    aes(y = total_tournaments * scale_factor),
+    color     = col_tourn,
+    linewidth = 1.1
+  ) +
+  geom_point(
+    aes(y = total_tournaments * scale_factor),
+    color = col_tourn,
+    size  = 2.2,
+    shape = 21,
+    fill  = "white",
+    stroke = 1.2
+  ) +
+  
+  # Dual y-axes
+  scale_y_continuous(
+    name   = "Total Prize Money (USD)",
+    labels = function(x) paste0("$", x / 1e6, "M"),
+    expand = expansion(mult = c(0, 0.05)),
+    sec.axis = sec_axis(
+      transform = ~ . / scale_factor,
+      name      = "Total Tournaments",
+      labels    = function(x) formatC(x, format = "d", big.mark = ",")
+    )
+  ) +
+  scale_x_continuous(
+    breaks = seq(1998, 2025, by = 3),
+    expand = expansion(add = 0.5)
+  ) +
+
+  theme_minimal(base_size = 13) +
+  
+  labs(
+    title    = "Prize Money & Tournament Volume in Esports",
+    x        = NULL,
+    caption  = "Source: https://www.esportsearnings.com/  |  Prize money in USD"
+  )
+p
+
 ```
-Analysis of the graph narrative
+
+### Analysis
+This plot helps show how the overall scale of esports changed from 1998 to 2025 by comparing two measures at the same time: **total prize money** and **total tournaments**. The blue bars show how much prize money was awarded each year, while the orange line shows how many tournaments were held. Looking at both together makes it easier to see whether esports growth came from having **more events**, **larger prize pools**, or both.
+
+There are three broad phases in the graph. **First**, from the late 1990s through about the early 2010s, both prize money and tournament counts were relatively low, though they gradually increased over time. **Second**, from about 2013 through 2019, esports expanded very quickly. Tournament counts rose sharply, and total prize money also rose at a fast rate. **Third**, the late 2010s to early 2020s appear to be the high point, with prize money peaking around 2021 and tournament counts remaining very high from about 2016 through 2022.
+
+Since 2022, both metrics have trended downward, with 2025 data showing the lowest tournament count since 2013. This may reflect broader economic headwinds affecting esports investment, or a structural shift in how competitive gaming is organized and monetized.
+
+A key insight from this graph is that **prize money and tournament volume do not always move at exactly the same rate**. For example, tournament counts remain high for several years even when prize money fluctuates more strongly. That suggests the esports ecosystem can stay active even when the money side changes, and it may also show that some years had fewer or more concentrated high-prize events.
+
 
 \newpage
 
@@ -46,11 +117,14 @@ Analysis of the graph narrative
 ```{r}
 #type the code of graph there
 ```
-Analysis of the graph narrative
+
+### Analysis
+
+
 
 \newpage
 
-## The Relationship Between The Number Of Players And The Award Pool Of The Tournament(JiXianLi)
+## The Relationship Between The Number Of Players And The Award Pool Of The Tournament
 ```{r}
 #| label: fig-PlayersAndPrice
 #| fig-cap: "Relationship Between Total Players and Award Pool Of Tournament"
@@ -70,6 +144,8 @@ ggplot(dataTable, aes(x = `Total Active Players`, y = `Total Prize Money`)) +
     y = "Total Prize Money Of The Tournament (USD)"
   )
 ```
+
+### Analysis
 As the @fig-PlayersAndPrice shown, overall, there is a strong positive correlation.That is, the more active players there are, the higher the total prize money for the event. This is intuitive, as an increase in participants usually means an expansion of the market size, which attracts more sponsors, viewers and capital inflows, thereby raising the prize pool. Moreover, this line is not a uniform straight line, it can be split into three parts. First is player number from 0 to 10000, in this case the growth of bonuses has been very slow, which is in line with the early stage of the e-sports industry. At that time, the player base size was small and the commercialization level was low. Second, is player number from 10001 to 22000, in this case the slope has significantly steepened, and the bonus amount has rapidly increased from several hundred million dollars to nearly 200 million dollars. This indicates that within this range, the increase in bonus for each additional active player is much higher than in the early stages. Finally, is player number greater than 22001. An interesting phenomenon emerges here: the number of players decreases first and then rises sharply. This indicates that the relationship between the number of players and the prize money is no longer strictly linear. In some years, there are more players but the prize money is actually lower. Based on the observation, this "abnormal" period was from 2020 to 2021, which was the period of the COVID-19 pandemic. It makes sense because during the pandemic, a lot of people are staying at home, especially Chinese people (due to the policy). People staying at home may use video games to occupy their leisure time, but the tournaments cannot able to be held.
 
 \newpage
@@ -81,10 +157,96 @@ Analysis of the graph narrative
 
 # Code Appendix
 ```{r}
-#| label: codeAppend
-#| ref-label: !expr knitr::all_labels()
+#| label: code-appendix
 #| echo: true
 #| eval: false
+
+library(tidyverse)
+library(ggplot2)
+library(scales)
+
+# Section 1: The Relationship between the Total Prize Pool and The Number of Tournaments
+# Author: Seokyoung Kim
+
+df <- read_csv("Esports_Stats.csv") |>
+  rename(
+    year              = year,
+    prize_money       = `Total Prize Money`,
+    total_tournaments = `Total Tournaments`
+  ) |>
+  select(year, prize_money, total_tournaments)
+
+scale_factor <- max(df$prize_money) / max(df$total_tournaments)
+
+col_prize  <- "blue"   # blue  — prize money
+col_tourn  <- "orange"   # orange — tournament
+
+p <- ggplot(df, aes(x = year)) +
+
+  geom_col(
+    aes(y = prize_money),
+    fill  = col_prize,
+    alpha = 0.85,
+    width = 0.7
+  ) +
+  geom_line(
+    aes(y = total_tournaments * scale_factor),
+    color     = col_tourn,
+    linewidth = 1.1
+  ) +
+  geom_point(
+    aes(y = total_tournaments * scale_factor),
+    color = col_tourn,
+    size  = 2.2,
+    shape = 21,
+    fill  = "white",
+    stroke = 1.2
+  ) +
+  
+  # Dual y-axes
+  scale_y_continuous(
+    name   = "Total Prize Money (USD)",
+    labels = function(x) paste0("$", x / 1e6, "M"),
+    expand = expansion(mult = c(0, 0.05)),
+    sec.axis = sec_axis(
+      transform = ~ . / scale_factor,
+      name      = "Total Tournaments",
+      labels    = function(x) formatC(x, format = "d", big.mark = ",")
+    )
+  ) +
+  scale_x_continuous(
+    breaks = seq(1998, 2025, by = 3),
+    expand = expansion(add = 0.5)
+  ) +
+
+  theme_minimal(base_size = 13) +
+  
+  labs(
+    title    = "Prize Money & Tournament Volume in Esports",
+    x        = NULL,
+    caption  = "Source: Esports_Stats.csv  |  Prize money in USD"
+  )
+p
+
+# Section 2: Mean vs. Median (Change this appropriately or you can just use this.)
+# Author: Junbo Zhao
+
+#{Your code here}
+
+# Section 3: The Relationship Between The Number Of Players And The Award Pool Of The Tournament
+# Author: JiXian Li
+
+dataTable <- read.csv("Esports_Stats.csv", check.names = FALSE)
+ggplot(dataTable, aes(x = `Total Active Players`, y = `Total Prize Money`)) +
+  geom_line(color = "skyblue", linewidth = 1) +
+  geom_point(color = "darkblue", size = 2) +
+  scale_x_continuous(labels = comma) +
+  scale_y_continuous(labels = comma) +
+  labs(
+    title = "Relationship Between Total Players and Award Pool Of Tournament",
+    x = "Total Active Players",
+    y = "Total Prize Money Of The Tournament (USD)"
+  )
 ```
 
 
