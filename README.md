@@ -1,4 +1,4 @@
-# Sec#_CP_[Name1]_[Name2]
+# Sec005_CP_Kim_Zhao_Li
 
 Stat 184 course project, Spring 2026. We're looking at how the esports
 industry has shifted over the last ten years — prize pools, genre mix,
@@ -12,6 +12,7 @@ Steam and Twitch.
 |-----------|--------------------|----------------------------------|
 | Junbo Zhao  | jzz5658@psu.edu    | Scraping, tidying, plots         |
 | Seokyoung Kim  | smk7032@psu.edu    | Supplementary data, tables       |
+| JiXianLi  | jpl6859@psu.edu    | data analyze and organize       |
 |-----------|--------------------|----------------------------------|
 
 ## Repo layout
