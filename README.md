@@ -1,72 +1,59 @@
-# Sec#_CP_[Name1]_[Name2]
+# Sec#_CP_Kim_Zhao_Li
 
-Stat 184 course project, Spring 2026. We're looking at how the esports
-industry has shifted over the last ten years — prize pools, genre mix,
-and geographic distribution — using data scraped from
-`esportsearnings.com` alongside playerbase and viewership numbers from
-Steam and Twitch.
+# Esports Prize Money, Tournaments, and Players (1998-2025)
+
+Stat 184 group project (Spring 2026). We track how the esports industry has scaled from a handful of arcade tournaments in the late 1990s to one of the largest entertainment categories in the world, and what changed once the growth stopped.
 
 ## Team
 
 | Name      | Email              | Primary role                     |
 |-----------|--------------------|----------------------------------|
 | Junbo Zhao  | jzz5658@psu.edu    | Scraping, tidying, plots         |
-| Seokyoung Kim  | smk7032@psu.edu    | Supplementary data, tables       |
+| Seokyoung Kim  | smk7032@psu.edu    | Supplementary data, tables  
+| Jixian Li  |  jpl6859@psu.edu  | data analyze and organize
 |-----------|--------------------|----------------------------------|
-
-## Repo layout
-
-```
-.
-├── project.qmd         # the report (renders to PDF)
-├── plan.md             # Checkpoint #2 plan
-├── references.bib      # BibTeX entries for the report
-├── apa7.csl            # citation style (dropped in from the template)
-├── data-raw/           # scraping scripts + cached HTML
-│   └── 01_scrape_esports.R
-├── data/               # tidied csv / rds files (git-tracked)
-├── R/                  # helper functions sourced from the qmd
-│   └── scrape_helpers.R
-├── figures/            # exported plots (only if needed outside qmd)
-├── .gitignore
-└── .lintr              # BOAST / tidyverse lint config
-```
-
-## How to reproduce
-
-1. Clone the repo.
-2. Open the project in RStudio (there's an `.Rproj` once someone on the
-   team generates one — see TODO below).
-3. Run the scraper once: `source("data-raw/01_scrape_esports.R")`. It
-   caches pages under `data-raw/cache/`, so re-runs are fast.
-4. Render the report: `quarto render project.qmd`.
-
-Packages we rely on: `rvest`, `polite`, `dplyr`, `tidyr`, `ggplot2`,
-`gt`, `janitor`, `fs`, `purrr`, `readr`, `stringr`, `lubridate`.
-
-## Coding style
-
-Tidyverse style guide. We lint with `{lintr}` using the `.lintr` file
-checked into the repo before every PR.
-
-## Git workflow
-
-- `main` is the protected branch. Do not push to `main` directly.
-- Each of us works on a personal branch: `dev-name1`, `dev-name2`.
-- Open a Pull Request when your branch is ready. The other person
-  reviews and merges. At least one approval before merge.
-- Commit messages follow the short imperative style, e.g.
-  `Add 2019 scrape and handle missing country column`.
-
-## TODO before Checkpoint #3
-
-- [ ] Add `.Rproj` and lockfile.
-- [ ] First end-to-end scrape + tidy.
-- [ ] First EDA plot committed.
-- [ ] README links added to plan and references.
-
 
 
 ## Authors
 
-Give information about who are the authors of the project and how people can get in touch if they have questions.
+- Seokyoung Kim — Section 2.1: prize money vs. tournament count
+- Junbo Zhao — Section 2.2: mean vs. median (skew over time)
+- JiXian Li — Section 2.3: active players vs. total prize money
+
+The Introduction, Data Description, Summary, and Code Appendix were written together.
+
+## What's in this folder
+
+| File | What it is |
+|---|---|
+| `project.qmd` | Main report. Renders to PDF. |
+| `Esports_Stats.csv` | The dataset (28 rows, one per year from 1998 to 2025). |
+| `README.md` | This file. |
+
+## How to render
+
+You will need a recent version of R (4.2 or later) and Quarto (1.3 or later), plus the following R packages: `tidyverse`, `scales`, `knitr`. From this folder, run:
+
+```bash
+quarto render project.qmd
+```
+
+The output is `project.pdf`. The Code Appendix at the end of the PDF is auto-generated from the chunks in the body, so editing a chart in the body updates the appendix on the next render.
+
+## Data source
+
+`Esports_Stats.csv` was compiled from public year-level totals on [esportsearnings.com](https://www.esportsearnings.com/), a community-maintained tracker of esports tournament results. The columns are:
+
+- `year` — calendar year
+- `Total Prize Money` — sum across all tracked tournaments that year, USD
+- `Total Tournaments` — number of tracked tournaments that year
+- `Total Active Players` — players with at least one tracked prize that year
+- `Mean Tournament Prize Pool`, `Median Tournament Prize Pool` — center of the per-tournament distribution
+- `Mean Earnings/Player`, `Median Earnings/Player` — center of the per-player distribution
+
+All dollar amounts are nominal USD (no inflation adjustment). The 2025 row may be incomplete because esportsearnings.com keeps adding results to recent years for some time after the year ends.
+
+## Notes
+
+The dataset does not split by game title, so headline events like Dota 2's The International get averaged in with smaller Counter-Strike LANs and grassroots tournaments. We discuss that and other limitations at the end of the report.
+
