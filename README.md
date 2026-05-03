@@ -16,9 +16,9 @@ Stat 184 group project (Spring 2026). We track how the esports industry has scal
 
 ## Authors
 
-- Seokyoung Kim — Section 2.1: prize money vs. tournament count
-- Junbo Zhao — Section 2.2: mean vs. median (skew over time)
-- JiXian Li — Section 2.3: active players vs. total prize money
+- Seokyoung Kim — Section 3.1: prize money vs. tournament count
+- Junbo Zhao — Section 3.2: mean vs. median (skew over time)
+- JiXian Li — Section 3.3: active players vs. total prize money
 
 The Introduction, Data Description, Summary, and Code Appendix were written together.
 
