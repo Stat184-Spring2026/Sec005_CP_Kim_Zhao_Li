@@ -53,10 +53,9 @@ esports <- read_csv("Esports_Stats.csv", show_col_types = FALSE) |>
 # Introduction
 E-sports has evolved from a small group of enthusiasts' entertainment into a global industry over the past three decades. At the same time, the number of professional players, the frequency of the competition, and the number of players are continuously increasing, which leads to esports becoming a formal exercise. However, we still lack quantitative research on the long-term growth model of e-sports. For instance, over the past nearly three decades, how has the total prize money of e-sports changed over time? Are there significant differences in the distribution of individual player incomes between different years? And is there a clear correlation between the growth of active players and the total prize money of. In order to answer these questions, this report records the data of e-sports from 1998 to 2025, including total award money, total number of tournaments, mean and median tournament award pool, and mean and median earnings per player. This report's analysis part mainly includes three parts:
 
-
 1. The trend of the award pool of the tournaments over the years.
-2. The difference between the mean and the median, and what does that difference mean?
-3. The relationship between the number of players and the award pool of the tournament?
+2. The difference between the mean and the median, and what does that difference mean.
+3. The relationship between the number of players and the award pool of the tournament.
 
 \newpage
 
