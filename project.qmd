@@ -317,57 +317,8 @@ As the @fig-PlayersAndPrice shows, overall, there is a strong positive correlati
 
 # Summary
 
-All three sections were aimed at the same bigger question: how did esports actually grow, and what is happening now that the growth has stopped. Read together, they tell one story.
+Overall, this report mainly explores three problems: The trend of the award pool of the tournaments over the years, the difference between the mean and the median, and the relationship between the number of players and the award pool of the tournament. These three problems are not separate from each other; on the contrary, they jointly answer a larger question: How has the e-sports market grown over the past nearly three decades? 3.1 shows that from 1998 to around 2019, as the total award prize money increased, the number of events also rose. However, the number of events peaked at approximately 6,300 in 2019 and then began to decline, with only about 1,700 events remaining by 2025. 3.2 shows that from 2010 to 2021, the average value of the event prize pool was 12 to 29 times the median value. This indicates that a few top events have monopolized the total award prize money. After 2022, this ratio dropped sharply to approximately 3 times. Superficially, the distribution seems to be more balanced, but when combined with the data on the number of events, it can be seen that the convergence of the mean and the median is not due to an improvement in the treatment of the bottom-level small events, but rather because a large number of these small events have disappeared. Section 3.3 further supplements the analysis from the perspective of players. Overall, the number of active players is significantly positively correlated with the total amount of prizes, and there is a positive feedback loop where supply and demand mutually drive each other. However, the scatter plot curve shows a bend around 2020 to 2021: the number of players remains high, but the amount of prizes decreases, indicating that there is not a strict linear relationship between the two, and external shocks may temporarily disrupt this relationship. These findings are of great significance for understanding the esports industry. For players, the opportunities to enter and become professional players are shrinking; for sponsors, simply increasing the stakes and investment in rewards may not necessarily attract more people; for society, the popularity of games has promoted the development of the technology industry (such as NVIDIA), and the development of technology can lead to the update and iteration of games, forming a virtuous cycle in terms of technology. However, our analysis still has limitations; for example, we did not separate the game into different categories, such as MOBA and FPS. A different kind of game may have different phenomena. If categorization discussion can make our analysis more comprehensive.
 
-Section 2.1 showed that total prize money and tournament count rose roughly together until about 2019, when the tournament count peaked at around 6,300 and started falling. By 2025 the count was back down to about 1,700. Prize money stayed elevated through 2021 and only dropped sharply after 2022. The two lines stopped tracking each other.
-
-Section 2.2 zoomed into what that meant for a typical event. From 2010 to 2021 the mean tournament prize pool ran 12 to 29 times the median, which is a textbook right skew: a handful of mega-events sitting on top of hundreds of small ones. After 2022 the ratio collapsed to about 3, but the closing of that gap was not because the small events caught up. It was because the small events stopped happening.
-
-Section 2.3 showed that more active players generally meant more prize money, but the curve loops back on itself across 2020 and 2021, when player counts stayed high while in-person events could not run.
-
-@fig-yoy-growth puts the timing on a single chart. Both metrics drop hard in 2020, recover unevenly through 2021, then both turn negative from 2023 onward. The 2020 dip is short and tied to a single global event. The slower bleed after 2022 is harder to explain away, since it is not tied to a single shock and it shows up in both prize money and tournament count at the same time.
-
-```{r}
-#| label: fig-yoy-growth
-#| fig-cap: "Year-over-year percent change in total prize money and tournament count, 2000-2025. Values above the dashed line indicate growth from the previous year; values below indicate contraction."
-#| fig-alt: "Two lines showing the year-over-year percent change in prize money and tournament count from 2000 to 2025. Both drop sharply in 2020, recover unevenly in 2021, and turn negative again from 2023 onward."
-#| fig-pos: H
-#| fig-width: 9
-#| fig-height: 4
-
-esports |>
-  arrange(year) |>
-  mutate(
-    prize_yoy = (prize_money - lag(prize_money)) /
-                  lag(prize_money) * 100,
-    tourn_yoy = (total_tournaments - lag(total_tournaments)) /
-                  lag(total_tournaments) * 100
-  ) |>
-  filter(year >= 2000) |>
-  pivot_longer(c(prize_yoy, tourn_yoy),
-               names_to = "metric", values_to = "yoy_pct") |>
-  mutate(metric = recode(metric,
-                         prize_yoy = "Prize money",
-                         tourn_yoy = "Tournament count")) |>
-  ggplot(aes(x = year, y = yoy_pct, color = metric)) +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "grey50") +
-  geom_line(linewidth = 0.9) +
-  geom_point(size = 2) +
-  scale_color_manual(values = c("Prize money"      = "#1f77b4",
-                                "Tournament count" = "#ff7f0e")) +
-  scale_y_continuous(labels = function(x) paste0(x, "%")) +
-  scale_x_continuous(breaks = seq(2000, 2025, by = 5)) +
-  labs(
-    title = "Year-over-year change in esports growth",
-    x = NULL, y = "Change vs. previous year", color = NULL
-  ) +
-  theme_minimal(base_size = 12) +
-  theme(legend.position = "top")
-```
-\newpage
-## Limitations
-
-A few things this dataset cannot tell us. It does not split tournaments by game title, so Dota 2's The International gets averaged in with small Counter-Strike LANs. It only counts players who have at least one recorded prize, so casual or unsponsored competitors are invisible to us. The dollar figures are nominal, so part of the long-term growth is just inflation. The 2025 numbers are likely incomplete too, since esportsearnings.com keeps updating older years as results come in.
 
 \newpage
 # Appendix
